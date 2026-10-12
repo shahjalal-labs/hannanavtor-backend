@@ -1,0 +1,367 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                     String            @id @default(auto()) @map("_id") @db.ObjectId
+  username               String
+  uniqueId               String            @unique
+  email                  String            @unique
+  password               String
+  balance                Float             @default(0)
+  totalPay               Float             @default(0)
+  fcmToken               String
+  designation            String?
+  gender                 Gender?           @default(UNSPECIFIED)
+  referralCode           String            @unique
+  profileImage           String?
+  bio                    String?
+  accountId              String?
+  customerId             String?
+  addMoneyCustomerId     String?
+  totalReviews           Int               @default(0)
+  totalRating            Int               @default(0)
+  averageRating          Float             @default(0)
+  role                   UserRole          @default(USER)
+  referrerStatus         ReferrerStatus    @default(NORMAL)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  userLocation           UserLocation[]
+  sender                 Connection[]      @relation("sender")
+  receiver               Connection[]      @relation("receiver")
+  provider               Referral[]        @relation("provider")
+  referrer               Referral[]        @relation("referrer")
+  client                 Referral[]        @relation("client")
+  useReferralCode        ReferralCode[]
+  usedReferralCodeStatus Boolean           @default(false)
+  review                 Review[]
+  subscription           Subscription[]
+  referrerMessage        Room[]            @relation("referrer")
+  providerMessage        Room[]            @relation("provider")
+  clientMessage          Room[]            @relation("client")
+  message                Message[]
+  inviteCommunity        InviteCommunity[]
+  joinCommunity          JoinCommunity[]
+  communityPost          CommunityPost[]
+  community              Community[]
+
+  @@map("users")
+}
+
+model PendingUser {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  username String
+  email    String @unique
+  fcmToken String
+  password String
+
+  @@map("pending_users")
+}
+
+model UserLocation {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?  @db.ObjectId
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("user_locations")
+}
+
+model Otp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  otpCode   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("otps")
+}
+
+model Connection {
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  senderId   String?          @db.ObjectId
+  receiverId String?          @db.ObjectId
+  status     ConnectionStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  sender     User?            @relation("sender", fields: [senderId], references: [id])
+  receiver   User?            @relation("receiver", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
+  @@map("connections")
+}
+
+model ReferralCode {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String   @db.ObjectId
+  usedReferralCode String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(references: [id], fields: [userId])
+
+  @@unique([userId, usedReferralCode])
+  @@map("referral_codes")
+}
+
+model Referral {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  serviceType String
+  referrerId  String      @db.ObjectId
+  providerId  String      @db.ObjectId
+  clientId    String      @db.ObjectId
+  communityId String?     @db.ObjectId
+  purpose     String
+  commitions  Float
+  description String?
+  validity    String      @default("30 days")
+  referStatus ReferStatus @default(PENDING)
+  amount      Float       @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  review      Review[]
+  referrer    User        @relation("referrer", fields: [referrerId], references: [id])
+  provider    User        @relation("provider", fields: [providerId], references: [id])
+  client      User        @relation("client", fields: [clientId], references: [id])
+  room        Room[]
+  community   Community?  @relation(fields: [communityId], references: [id])
+
+  @@map("referrals")
+}
+
+model Review {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  referralId String   @db.ObjectId
+  referrerId String   @db.ObjectId
+  providerId String   @db.ObjectId
+  clientId   String   @db.ObjectId
+  rating     Float
+  comment    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  referral   Referral @relation(references: [id], fields: [referralId])
+  client     User     @relation(references: [id], fields: [clientId])
+
+  @@map("reviews")
+}
+
+model Plan {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String   @db.ObjectId
+  planName           String
+  amount             Float
+  intervalCount      Int
+  discount           Int      @default(0)
+  priceId            String
+  connectedAccountId String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("plans")
+}
+
+model Subscription {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  paymentMethodId    String
+  userId             String?            @db.ObjectId
+  priceId            String
+  subscriptionId     String
+  connectedAccountId String
+  planName           String
+  discount           Int
+  status             SubscriptionStatus @default(ACTIVE)
+  user               User?              @relation(fields: [userId], references: [id])
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@map("subscriptions")
+}
+
+model PaymentActivity {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  type      String
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payment_activities")
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  title     String
+  body      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notifications")
+}
+
+model Room {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  referralId     String    @db.ObjectId
+  referrerId     String    @db.ObjectId
+  providerId     String    @db.ObjectId
+  clientId       String    @db.ObjectId
+  purpose        String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  referrer       User      @relation("referrer", fields: [referrerId], references: [id])
+  provider       User      @relation("provider", fields: [providerId], references: [id])
+  client         User      @relation("client", fields: [clientId], references: [id])
+  message        Message[]
+  referral       Referral  @relation(fields: [referralId], references: [id])
+  meetingStatus  Boolean   @default(false)
+  connectedUsers String[]  @default([])
+
+  @@unique([referralId, referrerId, providerId, clientId])
+  @@map("rooms")
+}
+
+model Message {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId     String   @db.ObjectId
+  referrerId String   @db.ObjectId
+  providerId String   @db.ObjectId
+  clientId   String   @db.ObjectId
+  senderId   String   @db.ObjectId
+  message    String?
+  fileUrl    String[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  room       Room     @relation(fields: [roomId], references: [id])
+  sender     User     @relation(fields: [senderId], references: [id])
+
+  @@map("messages")
+}
+
+model Community {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  ambassadorId    String            @db.ObjectId
+  communityPhoto  String
+  communityName   String
+  privacy         Privacy           @default(Public)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  joinCommunity   JoinCommunity[]
+  inviteCommunity InviteCommunity[]
+  communityPost   CommunityPost[]
+  owner           User              @relation(fields: [ambassadorId], references: [id])
+  referral        Referral[]
+
+  @@map("communities")
+}
+
+model JoinCommunity {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  communityId String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  community   Community @relation(fields: [communityId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, communityId])
+  @@map("join_communities")
+}
+
+model InviteCommunity {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  communityId      String    @db.ObjectId
+  inviterId        String    @db.ObjectId
+  inviteeId        String    @db.ObjectId
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  communityInviter User      @relation(fields: [inviterId], references: [id])
+  community        Community @relation(fields: [communityId], references: [id])
+
+  @@unique([communityId, inviterId])
+  @@map("invite_communities")
+}
+
+model CommunityPost {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String     @db.ObjectId
+  communityId String     @db.ObjectId
+  post        String
+  location    String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  community   Community  @relation(fields: [communityId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+  postLike    PostLike[]
+
+  @@map("community_post")
+}
+
+model PostLike {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String        @db.ObjectId
+  postId    String        @db.ObjectId
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  post      CommunityPost @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+  @@map("post_likes")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNSPECIFIED
+}
+
+enum ReferrerStatus {
+  NORMAL
+  SUPER
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+}
+
+enum ReferStatus {
+  PENDING
+  PROVIDER_ACCEPTED
+  CLIENT_ACCEPTED
+  PROVIDER_REJECTED
+  CLIENT_REJECTED
+  DELIVERED
+  COMPLETED
+  DISPUTE
+}
+
+enum Privacy {
+  Public
+  Private
+}
