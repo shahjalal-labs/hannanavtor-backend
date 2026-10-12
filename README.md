@@ -1,177 +1,101 @@
-# Hannan Avtor Backend - Professional Social Network & Calling API
+# 🚀 Hannan Avtor — Creator Community & VIP Membership API
 
 <p align="center">
-  <img src="assets/banner.svg" alt="hannanavtor-backend Banner" width="100%">
+  <img src="./assets/banner.svg" alt="Architecture Banner" width="100%" />
 </p>
 
 <p align="center">
-  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-20.x-green?style=for-the-badge&logo=node.js" alt="Node.js"></a>
-  <a href="https://expressjs.com"><img src="https://img.shields.io/badge/Express-4.21-black?style=for-the-badge&logo=express" alt="Express"></a>
-  <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript"></a>
-  <a href="https://www.prisma.io"><img src="https://img.shields.io/badge/Prisma-6.x-2D3748?style=for-the-badge&logo=prisma" alt="Prisma"></a>
-  <a href="https://www.mongodb.com"><img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb" alt="MongoDB"></a>
-  <a href="https://agora.io"><img src="https://img.shields.io/badge/Agora_RTC-099DFD?style=for-the-badge" alt="Agora RTC"></a>
-  <a href="https://stripe.com"><img src="https://img.shields.io/badge/Stripe-635BFF?style=for-the-badge&logo=stripe" alt="Stripe"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-ISC-blue?style=for-the-badge" alt="License"></a>
+  <a href="https://www.postman.com/shahjalal-backend-9458759/shahjalal-api-portfolio/collection/48491387-c4698f3a-9544-4e89-b9b1-9e5066d3cb22">
+    <img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="height: 34px;" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://www.postman.com/shahjalal-backend-9458759/shahjalal-api-portfolio/collection/48491387-c4698f3a-9544-4e89-b9b1-9e5066d3cb22">
+    <img src="https://img.shields.io/badge/Postman-Interactive%20API%20Documentation-FF6C37?style=for-the-badge&logo=postman&logoColor=white" alt="Postman Documentation" />
+  </a>
+  &nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  &nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  &nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
 </p>
 
 ---
 
-## 📖 Overview
+## 📌 Executive Overview
 
-**hannanavtor-backend** is a social professional networking and creator collaboration API built with Node.js, Express.js, TypeScript, and Prisma ORM with MongoDB. It features interactive community discussion feeds, peer-to-peer connection requests, direct messaging, referral incentive tracking, Agora RTC audio/video calling tokens, and Stripe creator payouts.
+Digital creator community hub, multi-tier VIP subscriptions, affiliate referral code commission tracking, and real-time community chat rooms built with Node.js, Express, TypeScript, Prisma, and Socket.io.
 
----
-
-## ⚡ Key Features
-
-- 🌐 **Community Social Feeds:** User posts, engagement reactions, comment threads, and topic categorization.
-- 👥 **Professional Peer Connections:** Connection request lifecycle, reciprocal followings, and contact discovery.
-- 📞 **Agora WebRTC Audio/Video Tokens:** Dynamic RTC token generation for private 1-on-1 and group video/audio calls.
-- 🎁 **Referral Reward Architecture:** Unique user referral codes tracking network growth, bonus balances, and commission payouts.
-- 💳 **Stripe Creator Payouts:** Direct integration with Stripe Connect for balance withdrawal and creator tips.
-- 🔔 **Firebase Cloud Messaging:** Instant real-time alerts for incoming calls, connection invites, and discussion replies.
+This microservice has been designed following enterprise software engineering standards, featuring clean modular service architecture, centralized error handling, robust JWT authorization, strict input validation, and comprehensive automated database models.
 
 ---
 
-## 🏗️ System Architecture
+## ⚡ Interactive API Documentation (Postman)
 
-```mermaid
-flowchart TD
-    User[Professional Network Members] -->|HTTPS REST| Router[Express Application Gateway]
+The entire API specification, complete with route headers, payload samples, and JWT authentication schemas, is published and directly accessible in the public Postman workspace:
 
-    subgraph Security ["Security & Auth"]
-        Router --> Auth[JWT Role Guard]
-        Router --> RateLimit[API Rate Limiter]
-    end
+👉 **[Launch Interactive Postman Workspace](https://www.postman.com/shahjalal-backend-9458759/shahjalal-api-portfolio/collection/48491387-c4698f3a-9544-4e89-b9b1-9e5066d3cb22)** *(No forking or sign-in required — instant browser reference)*
 
-    subgraph SocialNetwork ["Community Modules"]
-        Auth --> CommunityMod[Community Feeds & Posts]
-        Auth --> ConnectMod[Connection Requests & Graph]
-        Auth --> MessageMod[Direct Messaging Service]
-        Auth --> ReferralMod[Referral Reward Tracking]
-    end
-
-    subgraph RTCAndPayments ["Real-Time & Creator Economy"]
-        Auth --> Agora[Agora WebRTC Token Engine]
-        Auth --> Stripe[Stripe Connect Payouts]
-    end
-
-    subgraph Persistence ["Persistence & CDN"]
-        SocialNetwork --> Prisma[Prisma ORM Client]
-        Prisma --> MongoDB[(MongoDB Cluster)]
-        SocialNetwork --> DOSpaces[DigitalOcean Spaces S3]
-    end
-```
+- **Collection UID**: `48491387-c4698f3a-9544-4e89-b9b1-9e5066d3cb22`
+- **Workspace**: Shahjalal API Portfolio
+- **Environment**: Cloud Production / Local Docker Compose
 
 ---
 
-## 📂 Directory Structure
+## 🏗️ Architecture & Data Modeling
 
-```text
-.
-├── src/
-│   ├── app/
-│   ├── components/
-│   └── ...
-├── assets/
-│   └── banner.svg
-├── .env.example
-├── .gitignore
-├── package.json
-├── README.md
-└── LICENSE
-```
+The backend persistence layer is engineered with production database schemas:
 
----
-
-## 🛠️ Tech Stack & Dependencies
-
-| Layer / Library | Version | Description |
-|---|---|---|
-| **Express.js** | `v4.21` | HTTP routing and middleware framework |
-| **TypeScript** | `v5.x` | Type safety across API entities |
-| **Prisma ORM** | `v6.x` | MongoDB modeling and query construction |
-| **Agora RTC SDK** | `REST` | WebRTC token generation for live calls |
-| **Stripe SDK** | `v17.x` | Creator economy and payout disbursements |
-| **AWS SDK (S3 Client)** | `v3.x` | DigitalOcean Spaces file storage integration |
-
----
-
-## ⚙️ Environment Variables
-
-Create a `.env` file in the project root based on the provided sample:
-
-```bash
-cp .env.example .env
-```
-
-Configurable variables:
-
-```env
-PORT=4000
-NODE_ENV=development
-DATABASE_URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/hannanavtor?retryWrites=true&w=majority
-
-JWT_SECRET=your_jwt_secret
-EXPIRES_IN=15d
-
-# Agora RTC
-AGORA_APP_ID=your_agora_app_id
-AGORA_APP_CERTIFICATE=your_agora_app_certificate
-
-# Stripe
-STRIPE_PK=pk_test_your_stripe_public_key
-STRIPE_SK=sk_test_your_stripe_secret_key
-
-# DigitalOcean Spaces
-DO_SPACES_ENDPOINT=https://nyc3.digitaloceanspaces.com
-DO_SPACES_KEY=your_do_spaces_key
-DO_SPACES_SECRET=your_do_spaces_secret
-DO_SPACES_BUCKET=hannanavtor-media
-```
+| Entity Model | Domain Responsibility |
+| :--- | :--- |
+| `Community / Plan` | Creator interest group channels, VIP subscription pricing tiers |
+| `ReferralCode / Referral` | Affiliate referral links, attribution tracking, and commission logs |
+| `PaymentActivity / Subscription` | Subscriber billing cycles, invoice history, and access gates |
+| `Room / Message` | Community group discussions and direct member-to-creator messaging |
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 1. Prerequisites
+- **Node.js** v18.x or v20.x
+- **PostgreSQL** or **MongoDB** (refer to `.env.example`)
+- **Redis** (for BullMQ queues where applicable)
 
-- Node.js (v20.x or higher recommended)
-- Package Manager (`npm`, `yarn`, or `pnpm`)
-
-### Installation
-
+### 2. Installation & Setup
 ```bash
-# Clone repository
+# Clone the repository
 git clone https://github.com/shahjalal-labs/hannanavtor-backend.git
 cd hannanavtor-backend
 
 # Install dependencies
 npm install
+
+# Configure environment variables
+cp .env.example .env
 ```
 
-### Running Locally
-
+### 3. Database Migration & Development
 ```bash
+# Generate database client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+
 # Start development server
 npm run dev
-# or for backend services
-npm run start:dev
-```
-
-### Building for Production
-
-```bash
-# Create production build
-npm run build
-
-# Start production server
-npm start
 ```
 
 ---
 
-## 📄 License
+## 👨‍💻 Engineering & Maintainer
 
-This project is licensed under the [ISC License](LICENSE).
+**Md. Shahjalal**  
+*Full Stack Software Engineer & Solutions Architect*  
+- **Email**: [muhommodshahjalal@gmail.com](mailto:muhommodshahjalal@gmail.com)  
+- **GitHub**: [@shahjalal-labs](https://github.com/shahjalal-labs)  
+- **Postman Portfolio**: [Shahjalal API Portfolio](https://www.postman.com/shahjalal-backend-9458759/shahjalal-api-portfolio)
+
+---
+<p align="center"><sub>Engineered with precision for production reliability and seamless scalability.</sub></p>
